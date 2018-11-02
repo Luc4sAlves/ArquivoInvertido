@@ -12,7 +12,8 @@ cliente* cria_cliente(int idade){
 	printf("Digite o codigo do cliente\n");
 
 	strcpy(nome,"Invertido");
-	scanf("%d",&cod);
+	//scanf("%d",&cod);
+	cod = rand()/10;
 
 	//nome[strcspn(nome,"\n")] = 0;
 
@@ -78,7 +79,7 @@ cliente* le_cliente(FILE* clientesDat){
 	}
 	else{
 		temp = NULL;
-		printf("NULL\n");
+		printf("NULL Clientes\n");
 	}
 
     return temp;
