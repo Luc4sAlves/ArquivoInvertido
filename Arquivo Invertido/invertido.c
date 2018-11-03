@@ -4,13 +4,13 @@
 #define p(int, string) printf("%d, %s\n", int, string);
 #define tam_a2 sizeof(int)*3
 
-FILE* index_invertido(FILE* tabela, int n, int* tam){
-    FILE* arq2 = passo_1(tabela,n,tam);
-    arq2 = passo_3(arq2);
-    return arq2;
+FILE* index_invertido(FILE* tabela){
+    FILE* index = passo_1(tabela);
+    index = passo_3(index);
+    return index;
 }
 
-FILE* passo_1(FILE* tabela, int n, int* tam){
+FILE* passo_1(FILE* tabela){
     FILE* arq2 = fopen("arquivo2.dat", "w+b");
     int i = 1;
     while(!feof(tabela)){
@@ -47,6 +47,7 @@ FILE* passo_2(FILE* arq2){
 }
 
 FILE* passo_3(FILE* arq2){
+
     printf("Começando passo 3\n");
     int num_reg = num_registros(arq2);
     A2** vect = (A2**) malloc(sizeof(A2*)*num_reg);
@@ -67,17 +68,13 @@ FILE* passo_3(FILE* arq2){
 }
 
 FILE* passo_4(A2** vect, int* num_reg){
-    printf("Começando passo 4>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
+    printf("Começando passo 4 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 
     int n = *num_reg;
-    //p(n,"n")
-    //fclose(arq2);
     int* prox = (int*) malloc(sizeof(int)* n);
-    //A6** regs = (A6**) malloc(sizeof(A6*) * n);
-    //if(regs == NULL) printf("NULLO");
-    /*for(int i =0; i < n; i++)
-        regs[i]->reg = (A2*) malloc(sizeof(A2));*/
+
     FILE* arq5 = cria_arquivo5(vect, num_reg);
+    fclose(arq5);
     FILE* arq6 = fopen("arquivo6.dat", "w+b");
 
 
@@ -92,12 +89,14 @@ FILE* passo_4(A2** vect, int* num_reg){
             prox[i] = vect[i+1]->ed;
 
     }
-    /*for(int i = 0; i < n; i++){
-        imprime_A2(vect[i]);
-        p(prox[i], "prox")
-    }*/
+    A6** regs = ordena_reg(vect,prox,num_reg);
+    printf("----------------------------------------\n");
+    for(int i = 0; i < n; i++){
+        imprime_A6(regs[i]);
+    }
+    printf("----------------------------------------\n");
     //oi
-    for(int i =0; i < n; i++){
+    for(int i = 0; i < n; i++){
         //imprime_A2(vect[i]);
         A6* regs = (A6*) malloc(sizeof(A6));
         //p(prox[i], "prox")
@@ -113,7 +112,48 @@ FILE* passo_4(A2** vect, int* num_reg){
         imprime_A6(le_a6(arq6));
     }
     p(5, "fim passo 4")
+    //arq6 = passo_5(arq6, num_reg);
     return arq6;
+}
+
+A6** ordena_reg(A2** vect, int* prox, int* num_reg){
+    oi
+    //int n = *num_reg;
+    p(*num_reg,"n")
+    A6** regs = (A6**) malloc(sizeof(A6*)*(*num_reg));
+    if(regs == NULL)
+        perror("error");
+    oi
+    for(int i =0;i < (*num_reg);i++){
+        oi
+        imprime_A2(vect[i]);
+        p(prox[i], "prox")
+        regs[i]->reg= vect[i];
+        regs[i]->prox = prox[i];
+        imprime_A2(regs[i]->reg);
+    }
+    return regs;
+
+}
+
+FILE* passo_5(FILE* arq6, int* num_reg){
+    A6** registros = (A6**) malloc(sizeof(A6*) * (*num_reg));
+    for(int i = 0; i < *num_reg; i++){
+        registros[i] = le_a6(arq6);
+    }
+    qsort(registros, *num_reg, sizeof(A6*), comp_A6);
+}
+
+static int comp_A6(const void *p1, const void* p2){
+    A6** a1 = (A6**)p1;
+    A6** a2 = (A6**)p2;
+
+    if((*a1)->reg->codCliente > (*a2)->reg->codCliente)
+        return 1;
+    else if((*a1)->reg->codCliente < (*a2)->reg->codCliente)
+        return -1;
+    else
+        return 0;
 }
 
 FILE* cria_arquivo5(A2** vect, int*num_reg){
@@ -145,7 +185,7 @@ FILE* cria_arquivo5(A2** vect, int*num_reg){
     pointers[0] = vect[0]->ed;
 
     for(i = 1; i < n; i++){
-        oi
+        //oi
         ultima_idade = vect[i]->idade;
         if(ultima_idade == vect[i-1]->idade)
             continue;

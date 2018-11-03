@@ -12,12 +12,12 @@ int main(){
     adiciona_cliente(cria_cliente(5), arq);
     adiciona_cliente(cria_cliente(5), arq);
     adiciona_cliente(cria_cliente(7), arq);
-    adiciona_cliente(cria_cliente(5), arq);
+    //adiciona_cliente(cria_cliente(5), arq);
     rewind(arq);
     //ler_clientes(arq);
-    FILE* arq2 = index_invertido(arq,1,4);
+    FILE* index = index_invertido(arq);
 
     fclose(arq);
-    fclose(arq2);
+    fclose(index);
 
 }
