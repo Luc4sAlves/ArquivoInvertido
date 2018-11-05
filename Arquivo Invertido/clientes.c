@@ -4,16 +4,16 @@
 //Douglas Custodio de Araujo
 //Jose Lucas Alves gomes
 
-cliente* cria_cliente(int idade){
-	int cod;
+cliente* cria_cliente(int idade, int cod){
+	//int cod;
 	char nome[100];
 
 	cliente *client = (cliente*) malloc(sizeof(cliente));
-	printf("Digite o codigo do cliente\n");
+	//printf("Digite o codigo do cliente\n");
 
 	strcpy(nome,"Invertido");
 	//scanf("%d",&cod);
-	cod = rand()/10;
+	//cod = rand()/10;
 
 	//nome[strcspn(nome,"\n")] = 0;
 
@@ -79,7 +79,7 @@ cliente* le_cliente(FILE* clientesDat){
 	}
 	else{
 		temp = NULL;
-		printf("NULL Clientes\n");
+		//printf("NULL Clientes\n");
 	}
 
     return temp;

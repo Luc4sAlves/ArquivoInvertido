@@ -16,7 +16,7 @@ typedef struct Cliente
 }cliente;
 
 //funções para inserção na tabela:
-	cliente* cria_cliente(int idade);
+	cliente* cria_cliente(int idade, int cod);
 
 	void adiciona_cliente(cliente*,FILE*);
 

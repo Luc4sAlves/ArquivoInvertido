@@ -4,9 +4,11 @@
 #define p(int, string) printf("%d, %s\n", int, string);
 #define tam_a2 sizeof(int)*3
 
-FILE* index_invertido(FILE* tabela){
+FILE* index_invertido(FILE* tabela, int* num_reg){
     FILE* index = passo_1(tabela);
-    index = passo_3(index);
+    index = passo_3(index, num_reg);
+    index = passo_6(index, tabela, num_reg);
+
     return index;
 }
 
@@ -21,13 +23,13 @@ FILE* passo_1(FILE* tabela){
         temp->codCliente = client->codCliente;
         temp->idade = client->idade;
         temp->ed = i;
-        imprime_cliente(client);
+        //imprime_cliente(client);
         escreve_a2(arq2, temp);
         free(client);
         free(temp);
         i++;
     }
-    rewind(arq2);
+    /*rewind(arq2);
 
     while(!feof(arq2)){
         //printf("ED: %d\n", *ed);
@@ -36,39 +38,41 @@ FILE* passo_1(FILE* tabela){
             break;
         imprime_A2(aux);
         free(aux);
-    }
+    }*/
+    rewind(tabela);
     rewind(arq2);
     return arq2;
-
 }
 
 FILE* passo_2(FILE* arq2){
     return arq2;
 }
 
-FILE* passo_3(FILE* arq2){
+FILE* passo_3(FILE* arq2, int* num_reg){
 
-    printf("Começando passo 3\n");
-    int num_reg = num_registros(arq2);
-    A2** vect = (A2**) malloc(sizeof(A2*)*num_reg);
-    for(int i = 0; i < num_reg;i++){
+    //printf("Comecando passo 3\n");
+    *num_reg = num_registros(arq2);
+    //p(*num_reg, "num")
+    A2** vect = (A2**) malloc(sizeof(A2*)*(*num_reg));
+
+    for(int i = 0; i < *num_reg;i++){
         A2* temp = le_a2(arq2);
         if(temp == NULL)
             break;
         vect[i] = temp;
     }
-    qsort(vect, num_reg, sizeof(A2*), comp_A2);
-    for(int i = 0; i < num_reg; i++){
+    qsort(vect, *num_reg, sizeof(A2*), comp_A2);
+    /*for(int i = 0; i < *num_reg; i++){
         imprime_A2(vect[i]);
-    }
+    }*/
     rewind(arq2);
     fclose(arq2);
-    arq2 = passo_4(vect,&num_reg);
+    arq2 = passo_4(vect,num_reg);
     return arq2;
 }
 
 FILE* passo_4(A2** vect, int* num_reg){
-    printf("Começando passo 4 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
+    //printf("Comecando passo 4 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 
     int n = *num_reg;
     int* prox = (int*) malloc(sizeof(int)* n);
@@ -89,60 +93,80 @@ FILE* passo_4(A2** vect, int* num_reg){
             prox[i] = vect[i+1]->ed;
 
     }
-    A6** regs = ordena_reg(vect,prox,num_reg);
-    printf("----------------------------------------\n");
+    A6** regs = passo_5(vect,prox,num_reg);
+    /*printf("----------------------------------------\n");
     for(int i = 0; i < n; i++){
         imprime_A6(regs[i]);
     }
-    printf("----------------------------------------\n");
+    printf("----------------------------------------\n");*/
     //oi
     for(int i = 0; i < n; i++){
         //imprime_A2(vect[i]);
-        A6* regs = (A6*) malloc(sizeof(A6));
+        //A6* regs = (A6*) malloc(sizeof(A6));
         //p(prox[i], "prox")
-        regs->reg = vect[i];
-        regs->prox = prox[i];
+        //regs->reg = vect[i];
+        //regs->prox = prox[i];
         //imprime_A2(regs->reg);
         //oi
-        escreve_a6(arq6, regs);
-        free(regs);
+        escreve_a6(arq6, regs[i]);
+        free(regs[i]);
     }
-    rewind(arq6);
+    /*rewind(arq6);
     for(int i =0; i <n; i++){
         imprime_A6(le_a6(arq6));
-    }
-    p(5, "fim passo 4")
+    }*/
+    rewind(arq6);
+    //p(5, "fim passo 4")
     //arq6 = passo_5(arq6, num_reg);
     return arq6;
 }
 
-A6** ordena_reg(A2** vect, int* prox, int* num_reg){
-    oi
+A6** passo_5(A2** vect, int* prox, int* num_reg){
+    //oi
     //int n = *num_reg;
-    p(*num_reg,"n")
-    A6** regs = (A6**) malloc(sizeof(A6*)*(*num_reg));
+    //p(*num_reg,"n")
+    int tam = sizeof(A6*);
+    A6** regs = (A6**) malloc(tam * (*num_reg));
     if(regs == NULL)
         perror("error");
-    oi
-    for(int i =0;i < (*num_reg);i++){
-        oi
-        imprime_A2(vect[i]);
-        p(prox[i], "prox")
-        regs[i]->reg= vect[i];
-        regs[i]->prox = prox[i];
-        imprime_A2(regs[i]->reg);
+    for(int i =0; i < *num_reg;i++){
+        regs[i] = NULL;
     }
+    //oi
+    for(int i =0;i < (*num_reg);i++){
+        //oi
+        //imprime_A2(vect[i]);
+        A6* temp = (A6*) malloc(sizeof(A6));
+        temp->reg = vect[i];
+        temp->prox = prox[i];
+        //p(prox[i], "prox")
+        regs[i] = temp;
+        //imprime_A2(regs[i]->reg);
+    }
+    qsort(regs, *num_reg,sizeof(A6*), comp_A6);
     return regs;
 
 }
 
-FILE* passo_5(FILE* arq6, int* num_reg){
-    A6** registros = (A6**) malloc(sizeof(A6*) * (*num_reg));
-    for(int i = 0; i < *num_reg; i++){
-        registros[i] = le_a6(arq6);
+FILE* passo_6(FILE* arq6, FILE* tabela, int* num_reg){
+    int n = *num_reg;
+    int* prox = (int*) malloc(sizeof(int)*n);
+    FILE* arq8 = fopen("arquivo_final.dat", "w+b");
+    for(int i = 0; i < n; i++){
+        A6* temp = le_a6(arq6);
+        cliente* c = le_cliente(tabela);
+        adiciona_cliente(c, arq8);
+        fwrite(&temp->prox,sizeof(int), 1, arq8);
     }
-    qsort(registros, *num_reg, sizeof(A6*), comp_A6);
+    rewind(arq8);
+    /*for(int i = 0; i < n;i++){
+        imprime_cliente(le_cliente(arq8));
+        fread(&prox[i],sizeof(int), 1, arq8);
+        p(prox[i],"prox")
+    }*/
+    return arq8;
 }
+
 
 static int comp_A6(const void *p1, const void* p2){
     A6** a1 = (A6**)p1;
@@ -154,9 +178,11 @@ static int comp_A6(const void *p1, const void* p2){
         return -1;
     else
         return 0;
+
+
 }
 
-FILE* cria_arquivo5(A2** vect, int*num_reg){
+FILE* cria_arquivo5(A2** vect, int* num_reg){
     FILE* arq5 = fopen("arquivo5.dat", "w+b");
     int n = *num_reg;
     int* idades = (int*) malloc(sizeof(int)* n);
@@ -218,10 +244,10 @@ FILE* cria_arquivo5(A2** vect, int*num_reg){
     free(index_idades);
     free(quantidade_reg);
     free(idades);
-    for(i = 0; i < qtd_idades;i++){
+    /*for(i = 0; i < qtd_idades;i++){
         imprime_A5(le_a5(arq5));
     }
-    rewind(arq5);
+    rewind(arq5);*/
     return arq5;
 }
 
@@ -247,8 +273,14 @@ static int comp_A2(const void* p1, const void* p2){
         return 1;
     else if((*a1)->idade < (*a2)->idade)
         return -1;
-    else
-        return 0;
+    else{
+        if((*a1)->ed < (*a2)->ed)
+            return -1;
+        else if((*a1)->ed > (*a2)->ed)
+            return 1;
+        else
+            return 0;
+    }
 }
 
 int escreve_a2(FILE* arq, A2* client){
@@ -264,7 +296,7 @@ int escreve_a2(FILE* arq, A2* client){
 
 int escreve_a5(FILE* arq, A5* index){
     if(!index){
-        printf("A5 Nulo\n");
+        printf("A5 NULL\n");
         return 0;
     }
     fwrite(&index->idade, sizeof(int), 1, arq);
@@ -322,7 +354,7 @@ A2* le_a2(FILE* arq){
 	}
 	else{
 		temp = NULL;
-		printf("NULL A2\n");
+		//printf("NULL A2\n");
 	}
 
     return temp;
@@ -365,4 +397,94 @@ void imprime_A2(A2* client){
     printf("**********************************************\n");
 }
 
+void cria_tabela(FILE* arq){
+    adiciona_cliente(cria_cliente(13, 20), arq);
+    adiciona_cliente(cria_cliente(13, 30), arq);
+    adiciona_cliente(cria_cliente(12, 34), arq);
+    adiciona_cliente(cria_cliente(13, 90), arq);
+    adiciona_cliente(cria_cliente(5, 190), arq);
+    adiciona_cliente(cria_cliente(5, 200), arq);
+    adiciona_cliente(cria_cliente(7, 211), arq);
+    rewind(arq);
+}
 
+cliente* le_a8(FILE* arq8,int* prox){
+    cliente* client = le_cliente(arq8);
+    fread(prox,sizeof(int), 1, arq8);
+    return client;
+}
+
+void imprime_saida(int *num_reg){
+    FILE* arq8 = fopen("arquivo_final.dat", "rb");
+    int n = *num_reg;
+    int prox;
+    for(int i = 0; i < n;i++){
+        cliente* client = le_a8(arq8, &prox);
+        printf("**********************************************");
+        printf("\nCodigo do cliente: ");
+        printf("%d", client->codCliente);
+        printf("\nNome do cliente: ");
+        printf("%s", client->nome);
+        printf("\nIdade do cliente: ");
+        printf("%d", client->idade);
+        printf("\nProx do cliente: ");
+        printf("%d\n", prox);
+        printf("**********************************************\n");
+        free(client);
+    }
+    rewind(arq8);
+    fclose(arq8);
+}
+
+void imprime_index(int* num_reg){
+    FILE* arq5 = fopen("arquivo5.dat", "rb");
+    while(!feof(arq5)){
+        A5* temp = le_a5(arq5);
+        if(temp == NULL)
+            break;
+        imprime_A5(temp);
+        free(temp);
+    }
+    rewind(arq5);
+    fclose(arq5);
+}
+
+void busca_idade(int* num_reg){
+    FILE* arq5 = fopen("arquivo5.dat", "rb");
+    cliente** clientes;
+    int idade;
+    printf("Digite a idade x a ser buscada: ");
+    scanf("%d", &idade);
+    while(!feof(arq5)){
+        A5* temp = le_a5(arq5);
+        if(temp == NULL)
+            break;
+        if(temp->idade == idade){
+            clientes = pega_idade(temp->pointer, temp->qtd);
+            printf("Clientes com a idade igual a %d:\n\n", idade);
+            for(int i = 0; i < temp->qtd;i++){
+                imprime_cliente(clientes[i]);
+            }
+            free(clientes);
+            fclose(arq5);
+            return;
+        }
+    }
+    printf("Nao ha clientes com essa idade no registro\n");
+}
+
+cliente** pega_idade(int pointer, int qtd){
+    FILE* arq8 = fopen("arquivo_final.dat", "rb");
+    cliente** clientes = (cliente**) malloc(sizeof(cliente*)*qtd);
+    int tam_a8 = tamanho_cliente()+ sizeof(int);
+    int i = 0;
+    fseek(arq8, (pointer-1)*(tam_a8), SEEK_SET);
+    while(pointer != -1){
+        cliente* temp = le_cliente(arq8);
+        fread(&pointer, sizeof(int), 1, arq8);
+        clientes[i] = temp;
+        i++;
+        fseek(arq8, (pointer-1)*(tam_a8), SEEK_SET);
+    }
+    return clientes;
+}
