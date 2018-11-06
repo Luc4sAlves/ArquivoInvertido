@@ -13,8 +13,8 @@ int main(){
     printf("-------------------------------------------------------\n");
     FILE* arq = fopen("tabela.dat", "w+b");
     cria_tabela(arq);
-    int option;
-    int *num_reg;
+    int option = 1;
+    int *num_reg = (int*) malloc(sizeof(int));
     int* num_idades;
     FILE* index = index_invertido(arq, num_reg);
     if(index != NULL)
